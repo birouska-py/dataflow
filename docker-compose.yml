@@ -1,0 +1,93 @@
+# Copyright VMware, Inc.
+# SPDX-License-Identifier: APACHE-2.0
+services:
+  #### STREAMING 
+  kafka-broker-df:
+    image: docker.io/bitnami/kafka:3.7
+    container_name: kafka-broker-df
+    hostname: kafka-broker-df
+    user: root
+    ports:
+      - "9092:9092"
+      - "9991:9991"
+    networks:
+      - dataflow_network
+    environment:
+      # KRaft settings
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka-broker-df:29093
+      - KAFKA_KRAFT_CLUSTER_ID=abcdefghijklmnopqrstuv
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=INTERNAL://kafka-broker-df:29092,CONTROLLER://kafka-broker-df:29093,EXTERNAL://0.0.0.0:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=INTERNAL://kafka-broker-df:29092,EXTERNAL://kafka-broker-df:9092
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=INTERNAL
+      #- KAFKA_CFG_GROUP_INITIAL_REBALANCE_DELAY_MS= 0
+      - KAFKA_CFG_NUM_PARTITIONS= 3
+      #- KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR= 3
+      #- KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR= 3
+    volumes:
+      - '~/docker_files/volumes/dataflow/kafka:/bitnami/kafka'
+
+  schema-registry:
+    image: docker.io/bitnami/schema-registry:7.1.12
+    container_name: schema-registry
+    hostname: schema-registry
+    ports:
+      - "8081:8081"
+    networks:
+      - dataflow_network
+    environment:
+      - SCHEMA_REGISTRY_HOST_NAME=schema-registry
+      - SCHEMA_REGISTRY_LISTENERS=http://0.0.0.0:8081
+      - SCHEMA_REGISTRY_KAFKA_BROKERS=PLAINTEXT://kafka-broker-df:29092
+    depends_on:
+      kafka-broker-df:
+        condition: service_started
+
+  console:
+    container_name: redpanda-console
+    image: docker.redpanda.com/redpandadata/console:v2.5.2
+    restart: unless-stopped
+    networks:
+      - dataflow_network
+    entrypoint: /bin/sh
+    command: -c 'echo "$$CONSOLE_CONFIG_FILE" > /tmp/config.yml; /app/console'
+    environment:
+      CONFIG_FILEPATH: /tmp/config.yml
+      CONSOLE_CONFIG_FILE: |
+        kafka:
+          brokers: ["kafka-broker-df:9092"]
+          schemaRegistry:
+            enabled: true
+            urls: ["http://schema-registry:8081"]
+    ports:
+      - "8091:8080"
+    depends_on:
+      kafka-broker-df:
+        condition: service_started
+      schema-registry:
+        condition: service_started
+  
+  # DATABASE
+  postgres-df:
+    container_name: postgres-df
+    image: "postgres:latest"
+    networks:
+      - dataflow_network
+    user: "root"
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      PGDATA: "/data/postgres"
+    volumes:
+       - ~/docker_files/volumes/dataflow/postgresql:/data/postgres
+    ports:
+      - "5432:5432"
+
+networks:
+  dataflow_network:
+    name: dataflow-network
+    driver: bridge
