@@ -1,0 +1,446 @@
+{
+	"info": {
+		"_postman_id": "28ee63fa-1dc4-4ae1-9410-5d4d9112cf8b",
+		"name": "kafka-connect-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "35154115"
+	},
+	"item": [
+		{
+			"name": "postgres",
+			"item": [
+				{
+					"name": "create-connector",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": " application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"connector.class\": \"io.debezium.connector.postgresql.PostgresConnector\",\n        \"tasks.max\": \"1\",\n        \"database.hostname\": \"postgres-df\",\n        \"database.port\": \"5432\",\n        \"database.user\": \"postgres\",\n        \"database.password\": \"postgres\",\n        \"database.dbname\" : \"postgres\",\n        \"topic.prefix\": \"postgres\",\n        \"schema.include.list\": \"inventory\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/connectors/connector-postgres/config",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"connectors",
+								"connector-postgres",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "pause-connector",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": " application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"connector.class\": \"io.debezium.connector.postgresql.PostgresConnector\",\n        \"tasks.max\": \"1\",\n        \"database.hostname\": \"postgres\",\n        \"database.port\": \"5432\",\n        \"database.user\": \"postgres\",\n        \"database.password\": \"postgres\",\n        \"database.dbname\" : \"postgres\",\n        \"topic.prefix\": \"postgres\",\n        \"schema.include.list\": \"inventory\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/connectors/connector-postgres/pause",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"connectors",
+								"connector-postgres",
+								"pause"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "resume-connector",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": " application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"connector.class\": \"io.debezium.connector.postgresql.PostgresConnector\",\n        \"tasks.max\": \"1\",\n        \"database.hostname\": \"postgres\",\n        \"database.port\": \"5432\",\n        \"database.user\": \"postgres\",\n        \"database.password\": \"postgres\",\n        \"database.dbname\" : \"postgres\",\n        \"topic.prefix\": \"postgres\",\n        \"schema.include.list\": \"inventory\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/connectors/connector-postgres/resume",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"connectors",
+								"connector-postgres",
+								"resume"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "connector-status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": " application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/connectors/connector-postgres/status",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"connectors",
+								"connector-postgres",
+								"status"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "minio",
+			"item": [
+				{
+					"name": "create-connector",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": " application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"connector.class\": \"io.confluent.connect.s3.S3SinkConnector\",\n        \"topics\": \"postgres.inventory.products\",\n        \"s3.bucket.name\": \"raw\",\n        \"store.url\": \"http://minio-df:9000\",\n        \"flush.size\":3,\n        \"storage.class\": \"io.confluent.connect.s3.storage.S3Storage\",      \n        \"format.class\": \"io.confluent.connect.s3.format.json.JsonFormat\",     \n        \"s3.region\": \"us-east-1\",\n        \"aws.access.key.id\": \"lWXMhEwa2bjKi820Ee5q\",\n        \"aws.secret.access.key\": \"ajIN9GIsLiusrne4oJeS0VaZOGVdPOLCnLeEErZg\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/connectors/connector-minio/config",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"connectors",
+								"connector-minio",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "pause-connector",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": " application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"connector.class\": \"io.debezium.connector.postgresql.PostgresConnector\",\n        \"tasks.max\": \"1\",\n        \"database.hostname\": \"postgres\",\n        \"database.port\": \"5432\",\n        \"database.user\": \"postgres\",\n        \"database.password\": \"postgres\",\n        \"database.dbname\" : \"postgres\",\n        \"topic.prefix\": \"postgres\",\n        \"schema.include.list\": \"inventory\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/connectors/connector-minio/pause",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"connectors",
+								"connector-minio",
+								"pause"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "resume-connector",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": " application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"connector.class\": \"io.debezium.connector.postgresql.PostgresConnector\",\n        \"tasks.max\": \"1\",\n        \"database.hostname\": \"postgres\",\n        \"database.port\": \"5432\",\n        \"database.user\": \"postgres\",\n        \"database.password\": \"postgres\",\n        \"database.dbname\" : \"postgres\",\n        \"topic.prefix\": \"postgres\",\n        \"schema.include.list\": \"inventory\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/connectors/connector-minio/resume",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"connectors",
+								"connector-minio",
+								"resume"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "connector-status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": " application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/connectors/connector-minio/status",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"connectors",
+								"connector-minio",
+								"status"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "mongo",
+			"item": [
+				{
+					"name": "create-connector",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": " application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"connector.class\" : \"com.mongodb.kafka.connect.MongoSinkConnector\",\n    \"tasks.max\" : \"1\",\n    \"connection.uri\": \"mongodb://root:password@mongodb-df:27017/\",\n    \"database\": \"db\"  ,\n    \"collection\": \"produtossink\" ,  \n    \"topics\": \"postgres.inventory.products\",\n    \"max.num.retries\": 1, \n    \"key.converter\": \"org.apache.kafka.connect.storage.StringConverter\",\n    \"key.converter.schemas.enable\": false,\n    \"value.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\n    \"value.converter.schemas.enable\": false  \n}\n\n\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/connectors/connector-mongo/config",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"connectors",
+								"connector-mongo",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "pause-connector",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": " application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"connector.class\": \"io.debezium.connector.postgresql.PostgresConnector\",\n        \"tasks.max\": \"1\",\n        \"database.hostname\": \"postgres\",\n        \"database.port\": \"5432\",\n        \"database.user\": \"postgres\",\n        \"database.password\": \"postgres\",\n        \"database.dbname\" : \"postgres\",\n        \"topic.prefix\": \"postgres\",\n        \"schema.include.list\": \"inventory\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/connectors/connector-mongo/pause",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"connectors",
+								"connector-mongo",
+								"pause"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "resume-connector",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Accept",
+								"value": " application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"connector.class\": \"io.debezium.connector.postgresql.PostgresConnector\",\n        \"tasks.max\": \"1\",\n        \"database.hostname\": \"postgres\",\n        \"database.port\": \"5432\",\n        \"database.user\": \"postgres\",\n        \"database.password\": \"postgres\",\n        \"database.dbname\" : \"postgres\",\n        \"topic.prefix\": \"postgres\",\n        \"schema.include.list\": \"inventory\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/connectors/connector-mongo/resume",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"connectors",
+								"connector-mongo",
+								"resume"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "connector-status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": " application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/connectors/connector-mongo/status",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"connectors",
+								"connector-mongo",
+								"status"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "kafka-cluster-information",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": " application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{host}}",
+					"host": [
+						"{{host}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "connectors",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": " application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{host}}/connectors",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"connectors"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

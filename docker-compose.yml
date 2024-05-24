@@ -47,36 +47,14 @@ services:
       kafka-broker-df:
         condition: service_started
 
-  redpanda-console-df:
-    container_name: redpanda-console-df
-    hostname: redpanda-console-df
-    image: docker.redpanda.com/redpandadata/console:v2.5.2
-    restart: unless-stopped
-    networks:
-      - dataflow_network
-    entrypoint: /bin/sh
-    command: -c 'echo "$$CONSOLE_CONFIG_FILE" > /tmp/config.yml; /app/console'
-    environment:
-      CONFIG_FILEPATH: /tmp/config.yml
-      CONSOLE_CONFIG_FILE: |
-        kafka:
-          brokers: ["kafka-broker-df:9092"]
-          schemaRegistry:
-            enabled: true
-            urls: ["http://schema-registry-df:8081"]
-    ports:
-      - "8080:8080"
-    depends_on:
-      kafka-broker-df:
-        condition: service_started
-      schema-registry-df:
-        condition: service_started
+
   
   # DATABASE - RELACIONAL
   postgres-df:
     container_name: postgres-df
     hostname: postgres-df
-    image: "postgres:latest"
+    #image: "postgres:latest"
+    image: quay.io/debezium/example-postgres:2.1
     networks:
       - dataflow_network
     user: "root"
@@ -86,11 +64,11 @@ services:
       PGDATA: "/data/postgres"
     volumes:
        - ~/docker_files/volumes/dataflow/postgresql:/data/postgres
+       #- ./scripts/postgres/bkp_inventory.sql:/docker-entrypoint-initdb.d/bkp_inventory.sql
     ports:
       - "5432:5432"
 
-# DATABASE - NOSQL
-
+  # DATABASE - NOSQL
   mongo-df:
     image: mongo:latest
     container_name: mongodb-df
@@ -118,6 +96,32 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: password
       ME_CONFIG_MONGODB_URL: mongodb://root:password@mongodb-df:27017/
 
+  #DATA LAKE
+  minio-df:
+    image: minio/minio:latest
+    container_name: minio-df
+    networks:
+          - dataflow_network
+    entrypoint: sh
+    command:   '-c ''mkdir -p /minio_data/raw && mkdir -p /minio_data/trusted && minio server /minio_data --console-address ":9001"'''
+    ports:
+      - "9050:9000"
+      - "9051:9001"
+    hostname: minio-df
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ACCESS_KEY: datalake
+      MINIO_SECRET_KEY: datalake
+    volumes:
+      - ~/docker_files/volumes/dataflow/minio/data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # KAFKA CONNECT
   kafka-connect-df:
         image: birouskapy/kafka-connect-debezium:v1
         container_name: kafka-connect-df
@@ -125,9 +129,9 @@ services:
         networks:
           - dataflow_network
         ports:
-        - 8083:8083
+          - 8083:8083
         depends_on:      
-         - kafka-broker-df      
+          - kafka-broker-df      
         environment:
         - KAFKA_LOG4J_OPTS=-Dlog4j.configuration=file:/opt/kafka/config/connect-log4j.properties
         - KAFKA_CONNECT_BOOTSTRAP_SERVERS=kafka-broker-df:29092
@@ -146,7 +150,41 @@ services:
             status.storage.replication.factor=1  
             CONNECT_REST_ADVERTISED_HOST_NAME: 'kafka-connect-df'       
         command: /opt/kafka/kafka_connect_run.sh
-
+        
+  redpanda-console-df:
+    container_name: redpanda-console-df
+    hostname: redpanda-console-df
+    image: docker.redpanda.com/redpandadata/console:v2.5.2
+    restart: unless-stopped
+    networks:
+      - dataflow_network
+    entrypoint: /bin/sh
+    command: -c 'echo "$$CONSOLE_CONFIG_FILE" > /tmp/config.yml; /app/console'
+    environment:
+      CONFIG_FILEPATH: /tmp/config.yml
+      CONSOLE_CONFIG_FILE: |
+        kafka:
+          brokers: ["kafka-broker-df:9092"]
+          schemaRegistry:
+            enabled: true
+            urls: ["http://schema-registry-df:8081"]
+        connect:
+          enabled: true
+          clusters:
+            - name: kafka-connect-df # Required field, will be used as identifier in the frontend
+              url: http://kafka-connect-df:8083
+              tls:
+                enabled: false # Trusted certs are still allowed by default
+             
+    ports:
+      - "8080:8080"
+    depends_on:
+      kafka-broker-df:
+        condition: service_started
+      schema-registry-df:
+        condition: service_started
+      kafka-connect-df:
+        condition: service_started
 networks:
   dataflow_network:
     name: dataflow-network
