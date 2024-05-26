@@ -1,15 +1,47 @@
-# Copyright VMware, Inc.
-# SPDX-License-Identifier: APACHE-2.0
 services:
+
+  # SOURCE
+  # DATABASE - RELACIONAL
+  postgres-df:
+    container_name: postgres-df
+    hostname: postgres-df
+    image: postgres:${POSTGRES_VERSION}
+    #image: "postgres:latest"
+    #image: quay.io/debezium/example-postgres:2.1
+    #image: debezium/postgres:16
+    networks:
+      - dataflow_network
+    #user: "root"
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: dvdrental
+      PGDATA: "/data/postgres"
+    volumes:
+       - ~/docker_files/volumes/dataflow/postgresql:/data/postgres
+       - ./scripts/postgres/backup:/backup
+       - ./scripts/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+    ports:
+      - "5432:5432"
+    command:
+       - "postgres"
+       - "-c"
+       - "wal_level=logical"
+       - "-c"
+       - "max_replication_slots=4"
+       - "-c"
+       - "max_wal_senders=4"
+
+  #ORCHESTRATION   
+
   #### STREAMING 
   kafka-broker-df:
-    image: docker.io/bitnami/kafka:3.7
+    image: docker.io/bitnami/kafka:${KAFKA_VERSION}
     container_name: kafka-broker-df
     hostname: kafka-broker-df
     user: root
     ports:
       - "9092:9092"
-      - "9991:9991"
     networks:
       - dataflow_network
     environment:
@@ -32,7 +64,7 @@ services:
       - '~/docker_files/volumes/dataflow/kafka:/bitnami/kafka'
 
   schema-registry-df:
-    image: docker.io/bitnami/schema-registry:7.1.12
+    image: docker.io/bitnami/schema-registry:${SCHEMA_REGISTRY_VERSION}
     container_name: schema-registry-df
     hostname: schema-registry-df
     ports:
@@ -47,114 +79,40 @@ services:
       kafka-broker-df:
         condition: service_started
 
-
-  
-  # DATABASE - RELACIONAL
-  postgres-df:
-    container_name: postgres-df
-    hostname: postgres-df
-    #image: "postgres:latest"
-    image: quay.io/debezium/example-postgres:2.1
-    networks:
-      - dataflow_network
-    user: "root"
-    environment:
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "postgres"
-      PGDATA: "/data/postgres"
-    volumes:
-       - ~/docker_files/volumes/dataflow/postgresql:/data/postgres
-       #- ./scripts/postgres/bkp_inventory.sql:/docker-entrypoint-initdb.d/bkp_inventory.sql
-    ports:
-      - "5432:5432"
-
-  # DATABASE - NOSQL
-  mongo-df:
-    image: mongo:latest
-    container_name: mongodb-df
-    hostname: mongodb-df
-    networks:
-      - dataflow_network
-    ports:
-      - 27017:27017
-    volumes:
-       - ~/docker_files/volumes/dataflow/mongodb:/data/db
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: password
-
-  mongo-express-df:
-    image: mongo-express:latest
-    container_name: mongo-express-df
-    hostname: mongo-express-df
-    networks:
-      - dataflow_network
-    ports:
-      - 8091:8081
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: password
-      ME_CONFIG_MONGODB_URL: mongodb://root:password@mongodb-df:27017/
-
-  #DATA LAKE
-  minio-df:
-    image: minio/minio:latest
-    container_name: minio-df
-    networks:
-          - dataflow_network
-    entrypoint: sh
-    command:   '-c ''mkdir -p /minio_data/raw && mkdir -p /minio_data/trusted && minio server /minio_data --console-address ":9001"'''
-    ports:
-      - "9050:9000"
-      - "9051:9001"
-    hostname: minio-df
-    environment:
-      MINIO_ROOT_USER: admin
-      MINIO_ROOT_PASSWORD: minioadmin
-      MINIO_ACCESS_KEY: datalake
-      MINIO_SECRET_KEY: datalake
-    volumes:
-      - ~/docker_files/volumes/dataflow/minio/data:/data
-    healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   # KAFKA CONNECT
   kafka-connect-df:
-        image: birouskapy/kafka-connect-debezium:v1
-        container_name: kafka-connect-df
-        hostname: kafka-connect-df
-        networks:
-          - dataflow_network
-        ports:
-          - 8083:8083
-        depends_on:      
-          - kafka-broker-df      
-        environment:
-        - KAFKA_LOG4J_OPTS=-Dlog4j.configuration=file:/opt/kafka/config/connect-log4j.properties
-        - KAFKA_CONNECT_BOOTSTRAP_SERVERS=kafka-broker-df:29092
-        - |
-            KAFKA_CONNECT_CONFIGURATION=
-            key.converter=org.apache.kafka.connect.json.JsonConverter
-            value.converter=org.apache.kafka.connect.json.JsonConverter
-            key.converter.schemas.enable=false
-            value.converter.schemas.enable=false
-            group.id=connect
-            offset.storage.topic=connect-offsets
-            offset.storage.replication.factor=1
-            config.storage.topic=connect-configs
-            config.storage.replication.factor=1
-            status.storage.topic=connect-status
-            status.storage.replication.factor=1  
-            CONNECT_REST_ADVERTISED_HOST_NAME: 'kafka-connect-df'       
-        command: /opt/kafka/kafka_connect_run.sh
+    image: ${DOCKER_HUB_ACCOUNT}/kafka-connect-debezium:${DEBEZIUM_CONTAINER_VERSION}
+    container_name: kafka-connect-df
+    hostname: kafka-connect-df
+    networks:
+      - dataflow_network
+    ports:
+      - 8083:8083
+    depends_on:      
+      - kafka-broker-df      
+    environment:
+    - KAFKA_LOG4J_OPTS=-Dlog4j.configuration=file:/opt/kafka/config/connect-log4j.properties
+    - KAFKA_CONNECT_BOOTSTRAP_SERVERS=kafka-broker-df:29092
+    - |
+        KAFKA_CONNECT_CONFIGURATION=
+        key.converter=org.apache.kafka.connect.json.JsonConverter
+        value.converter=org.apache.kafka.connect.json.JsonConverter
+        key.converter.schemas.enable=false
+        value.converter.schemas.enable=false
+        group.id=connect
+        offset.storage.topic=connect-offsets
+        offset.storage.replication.factor=1
+        config.storage.topic=connect-configs
+        config.storage.replication.factor=1
+        status.storage.topic=connect-status
+        status.storage.replication.factor=1  
+        CONNECT_REST_ADVERTISED_HOST_NAME: 'kafka-connect-df'       
+    command: /opt/kafka/kafka_connect_run.sh
         
   redpanda-console-df:
     container_name: redpanda-console-df
     hostname: redpanda-console-df
-    image: docker.redpanda.com/redpandadata/console:v2.5.2
+    image: docker.redpanda.com/redpandadata/console:${REDPANDA_VERSION}
     restart: unless-stopped
     networks:
       - dataflow_network
@@ -185,6 +143,60 @@ services:
         condition: service_started
       kafka-connect-df:
         condition: service_started
+
+  #SINK
+
+  #DATA LAKE
+  minio-df:
+    image: minio/minio:${MINIO_VERSION}
+    container_name: minio-df
+    networks:
+          - dataflow_network
+    entrypoint: sh
+    command:   '-c ''mkdir -p /minio_data/raw && mkdir -p /minio_data/trusted && minio server /minio_data --console-address ":9001"'''
+    ports:
+      - "9050:9000"
+      - "9051:9001"
+    hostname: minio-df
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - ~/docker_files/volumes/dataflow/minio/data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # DATABASE - NOSQL
+  mongo-df:
+    image: mongo:${MONGODB_VERSION}
+    container_name: mongodb-df
+    hostname: mongodb-df
+    networks:
+      - dataflow_network
+    ports:
+      - 27017:27017
+    volumes:
+       - ~/docker_files/volumes/dataflow/mongodb:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+
+  mongo-express-df:
+    image: mongo-express:latest
+    container_name: mongo-express-df
+    hostname: mongo-express-df
+    networks:
+      - dataflow_network
+    ports:
+      - 8091:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password
+      ME_CONFIG_MONGODB_URL: mongodb://root:password@mongodb-df:27017/
+  
 networks:
   dataflow_network:
     name: dataflow-network
