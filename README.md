@@ -1,4 +1,10 @@
-### README
+# 
+
+# Objective
+
+The objective of this Proof of Concept (POC) is to implement Change Data Capture (CDC) in PostgreSQL and use Debezium connectors with Kafka to capture changes in database records. These changes are then sent to a data lake (S3) and a MongoDB database. The goal is to demonstrate the seamless integration and data flow from source databases to data lakes and NoSQL databases, ensuring real-time data synchronization and availability.
+
+# 
 
 # Docker Compose Setup for Data Flow Services
 
