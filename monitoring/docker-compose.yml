@@ -1,0 +1,55 @@
+services:
+
+  # MONITORING
+
+  # KAFKA EXPORTER
+  kafka-exporter:
+    container_name: kafka-exporter-df
+    hostname: kafka-exporter-df
+    image: bitnami/kafka-exporter:1.7.0
+    command:
+      - "--kafka.server=kafka-broker-df:9092"
+    ports:
+      - 9308:9308
+    networks:
+      - dataflow_network
+
+  prometheus:
+    container_name: prometheus-df
+    hostname: prometheus-df
+    image: bitnami/prometheus:2.52.1
+    user: root
+    volumes:
+      - ~/docker_files/volumes/dataflow/monitoring/prometheus/data:/prometheus
+      - ./prometheus/prometheus.yml:/opt/bitnami/prometheus/conf/prometheus.yml
+    ports:
+      - 9099:9090
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=30d"
+    networks:
+      - dataflow_network
+
+  grafana:
+    container_name: grafana-df
+    hostname: grafana-df
+    image: grafana/grafana:11.0.0
+    environment:
+      - GF_PATHS_DATA=/var/lib/grafana
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ~/docker_files/volumes/dataflow/monitoring/grafana/data:/var/lib/grafana
+      - ~/docker_files/volumes/dataflow/monitoring/grafana/config:/etc/grafana
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+    ports:
+      - 3000:3000
+    networks:
+      - dataflow_network
+ 
+networks:
+  dataflow_network:
+    name: dataflow-network
+    driver: bridge
+    external: true
+

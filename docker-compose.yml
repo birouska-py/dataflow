@@ -20,7 +20,7 @@ services:
     volumes:
        - ~/docker_files/volumes/dataflow/postgresql:/data/postgres
        - ./scripts/postgres/backup:/backup
-       - ./scripts/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+       - ./scripts/postgres/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
     ports:
       - "5432:5432"
     command:
@@ -42,17 +42,20 @@ services:
     user: root
     ports:
       - "9092:9092"
+      - "9101:9101"
     networks:
       - dataflow_network
     environment:
       # KRaft settings
       - KAFKA_CFG_PROCESS_ROLES=controller,broker
       - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_JMX_PORT=9101
+      - KAFKA_CFG_JMX_HOSTNAME=kafka-broker-df 
       - KAFKA_CFG_NODE_ID=1
       - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka-broker-df:29093
       - KAFKA_KRAFT_CLUSTER_ID=kafka-broker-df
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       - KAFKA_CFG_LISTENERS=INTERNAL://kafka-broker-df:29092,CONTROLLER://kafka-broker-df:29093,EXTERNAL://0.0.0.0:9092
       - KAFKA_CFG_ADVERTISED_LISTENERS=INTERNAL://kafka-broker-df:29092,EXTERNAL://kafka-broker-df:9092
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=INTERNAL

@@ -1,0 +1,25 @@
+<mxfile host="Electron" modified="2024-06-23T22:02:34.469Z" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/24.5.3 Chrome/124.0.6367.207 Electron/30.0.6 Safari/537.36" etag="eU11id-B9uwMsJp1FzGo" version="24.5.3" type="device">
+  <diagram name="Page-1" id="f7pt87VqSOtJwwYtBzIa">
+    <mxGraphModel dx="1434" dy="787" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="jU5pDyDidHcZGijyEm1x-2" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;1. Coleta e Preparação da Amostra&lt;/h1&gt;&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;&lt;span style=&quot;background-color: initial; font-size: 12px; font-weight: normal;&quot;&gt;A coleta de amostras é um passo crucial para o isolamento e identificação da Salmonella spp. Amostras clínicas, como fezes, sangue e urina, são coletadas de pacientes com suspeita de infecção. Amostras de alimentos também são coletadas para análise microbiológica.&lt;/span&gt;&lt;br&gt;&lt;/h1&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="50" y="70" width="430" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="jU5pDyDidHcZGijyEm1x-3" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;2. Pré-Enriquecimento&lt;/h1&gt;&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;&lt;span style=&quot;font-size: 12px; font-weight: 400;&quot;&gt;A etapa de pré-enriquecimento visa aumentar a sensibilidade da detecção da Salmonella spp. em amostras com baixo número de bactérias. As amostras são incubadas em meio não seletivo, como caldo lactosado, para permitir o crescimento da Salmonella spp. e outras bactérias.&lt;/span&gt;&lt;br&gt;&lt;/h1&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="170" y="260" width="430" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="jU5pDyDidHcZGijyEm1x-4" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;3. Enriquecimento Seletivo&lt;/h1&gt;&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;&lt;span style=&quot;font-size: 12px; font-weight: 400;&quot;&gt;O enriquecimento seletivo é realizado para isolar a Salmonella spp. de outras bactérias presentes na amostra. Os meios de cultura seletivos, como caldo tetrationato e caldo selenito cistina, inibem o crescimento de outras bactérias, enquanto permitem o crescimento da Salmonella spp.&lt;/span&gt;&lt;br&gt;&lt;/h1&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="420" y="450" width="430" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="jU5pDyDidHcZGijyEm1x-5" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;4. Isolamento em Meios Sólidos Seletivos e Diferenciais&lt;/h1&gt;&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;&lt;span style=&quot;font-size: 12px; font-weight: 400;&quot;&gt;Após o enriquecimento seletivo, a Salmonella spp. é isolada em meios sólidos seletivos e diferenciais, como agar Salmonella-Shigella (SS), agar MacConkey e agar XLT4. Esses meios permitem a identificação de colônias típicas de Salmonella spp. por meio de suas características morfológicas e bioquímicas.&lt;/span&gt;&lt;br&gt;&lt;/h1&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="720" y="670" width="430" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="jU5pDyDidHcZGijyEm1x-6" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;5. Confirmação Bioquímica e Sorológica&lt;/h1&gt;&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;&lt;span style=&quot;font-size: 12px; font-weight: 400;&quot;&gt;A confirmação da presença de Salmonella spp. é realizada por meio de testes bioquímicos e sorológicos. Os testes bioquímicos identificam a Salmonella spp. com base em sua capacidade de utilizar ou produzir certos compostos químicos. Os testes sorológicos utilizam anticorpos específicos para detectar antígenos presentes na superfície da Salmonella spp.&lt;/span&gt;&lt;br&gt;&lt;/h1&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="870" y="910" width="430" height="170" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
