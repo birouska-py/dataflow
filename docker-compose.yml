@@ -15,12 +15,11 @@ services:
     environment:
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "postgres"
-      POSTGRES_DB: dvdrental
+      POSTGRES_DB: dataflow
       PGDATA: "/data/postgres"
     volumes:
        - ~/docker_files/volumes/dataflow/postgresql:/data/postgres
-       - ./scripts/postgres/backup:/backup
-       - ./scripts/postgres/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+       - ./utils/scripts/postgres/db_dataflow.sql:/docker-entrypoint-initdb.d/db_dataflow.sql
     ports:
       - "5432:5432"
     command:
@@ -66,21 +65,21 @@ services:
     volumes:
       - '~/docker_files/volumes/dataflow/kafka:/bitnami/kafka'
 
-  schema-registry-df:
-    image: docker.io/bitnami/schema-registry:${SCHEMA_REGISTRY_VERSION}
-    container_name: schema-registry-df
-    hostname: schema-registry-df
-    ports:
-      - "8081:8081"
-    networks:
-      - dataflow_network
-    environment:
-      - SCHEMA_REGISTRY_HOST_NAME=schema-registry
-      - SCHEMA_REGISTRY_LISTENERS=http://0.0.0.0:8081
-      - SCHEMA_REGISTRY_KAFKA_BROKERS=PLAINTEXT://kafka-broker-df:29092
-    depends_on:
-      kafka-broker-df:
-        condition: service_started
+  # schema-registry-df:
+  #   image: docker.io/bitnami/schema-registry:${SCHEMA_REGISTRY_VERSION}
+  #   container_name: schema-registry-df
+  #   hostname: schema-registry-df
+  #   ports:
+  #     - "8081:8081"
+  #   networks:
+  #     - dataflow_network
+  #   environment:
+  #     - SCHEMA_REGISTRY_HOST_NAME=schema-registry
+  #     - SCHEMA_REGISTRY_LISTENERS=http://0.0.0.0:8081
+  #     - SCHEMA_REGISTRY_KAFKA_BROKERS=PLAINTEXT://kafka-broker-df:29092
+  #   depends_on:
+  #     kafka-broker-df:
+  #       condition: service_started
 
   # KAFKA CONNECT
   kafka-connect-df:
@@ -109,8 +108,11 @@ services:
         config.storage.replication.factor=1
         status.storage.topic=connect-status
         status.storage.replication.factor=1  
-        CONNECT_REST_ADVERTISED_HOST_NAME: 'kafka-connect-df'       
-    command: /opt/kafka/kafka_connect_run.sh
+        CONNECT_REST_ADVERTISED_HOST_NAME: 'kafka-connect-df'    
+    volumes:
+       - ./utils/configs/connectors:/etc/kafka-connect/connectors   
+       - ./utils/scripts/kafka-connect:/scripts  
+    command: /scripts/entrypoint.sh
         
   redpanda-console-df:
     container_name: redpanda-console-df
@@ -126,9 +128,9 @@ services:
       CONSOLE_CONFIG_FILE: |
         kafka:
           brokers: ["kafka-broker-df:9092"]
-          schemaRegistry:
-            enabled: true
-            urls: ["http://schema-registry-df:8081"]
+          # schemaRegistry:
+          #   enabled: true
+          #   urls: ["http://schema-registry-df:8081"]
         connect:
           enabled: true
           clusters:
@@ -142,8 +144,8 @@ services:
     depends_on:
       kafka-broker-df:
         condition: service_started
-      schema-registry-df:
-        condition: service_started
+      # schema-registry-df:
+      #   condition: service_started
       kafka-connect-df:
         condition: service_started
 
