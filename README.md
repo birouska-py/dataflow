@@ -31,13 +31,6 @@ This Docker Compose setup includes several services for a data flow pipeline, or
 - **Container Name**: `kafka-broker-df`
 - **Ports**: `9092`
 
-#### Schema Registry
-
-- **Image**: `bitnami/schema-registry:${SCHEMA_REGISTRY_VERSION}`
-- **Container Name**: `schema-registry-df`
-- **Ports**: `8081`
-- **Depends On**: `kafka-broker-df`
-
 #### Kafka Connect with Debezium
 
 - **Image**: `debezium/connect`
@@ -52,7 +45,6 @@ This Docker Compose setup includes several services for a data flow pipeline, or
 - **Ports**: `8080`
 - **Depends On**:
   - `kafka-broker-df`
-  - `schema-registry-df`
   - `kafka-connect-df`
 
 ### Sink
@@ -85,7 +77,6 @@ This Docker Compose setup includes several services for a data flow pipeline, or
 ## Access URLs
 
 - **Kafka Broker**: `localhost:9092`
-- **Schema Registry**: `http://localhost:8081`
 - **PostgreSQL**: `localhost:5432`
   - **User**: `postgres`
   - **Password**: `postgres`

@@ -1,0 +1,111 @@
+openapi: 3.0.0
+info:
+  title: Dataflow IOT API
+  description: API for managing positions in the dataflow system.
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/
+  - url: https://api.dataflow.example.com/v1
+paths:
+  /positions:
+    post:
+      summary: Create a new position
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dtposition:
+                  type: string
+                  format: date-time
+                  example: "2024-07-02T14:30:00Z"
+                long:
+                  type: number
+                  format: double
+                  example: -46.6333
+                lat:
+                  type: number
+                  format: double
+                  example: -23.5505
+                odometer:
+                  type: number
+                  format: double
+                  example: 15000.5
+                consume:
+                  type: number
+                  format: double
+                  example: 12.3
+                speedy:
+                  type: number
+                  format: double
+                  example: 80.0
+                equipment_id:
+                  type: string
+                  format: uuid
+                  example: "10000000-0000-0000-0000-000000000005"
+                carddriver:
+                  type: string
+                  format: uuid
+                  example: "50000000-0000-0000-0000-000000000006"
+                event_id:
+                  type: string
+                  format: uuid
+                  example: "40000000-0000-0000-0000-000000000008"
+      responses:
+        '201':
+          description: Position created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Position'
+components:
+  schemas:
+    Position:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "10000000-0000-0000-0000-000000000005"
+        dtposition:
+          type: string
+          format: date-time
+          example: "2024-07-02T14:30:00Z"
+        dtarrived:
+          type: string
+          format: date-time
+          example: "2024-07-02T15:00:00Z"
+        long:
+          type: number
+          format: double
+          example: -46.6333
+        lat:
+          type: number
+          format: double
+          example: -23.5505
+        odometer:
+          type: number
+          format: double
+          example: 15000.5
+        consume:
+          type: number
+          format: double
+          example: 12.3
+        speedy:
+          type: number
+          format: double
+          example: 80.0
+        equipment_id:
+          type: string
+          format: uuid
+          example: "10000000-0000-0000-0000-000000000005"
+        carddriver:
+          type: string
+          format: uuid
+          example: "50000000-0000-0000-0000-000000000006"
+        event_id:
+          type: string
+          format: uuid
+          example: "40000000-0000-0000-0000-000000000008"
