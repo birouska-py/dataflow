@@ -1,17 +1,12 @@
-# 
-
 # Objective
 
 The objective of this Proof of Concept (POC) is to implement Change Data Capture (CDC) in PostgreSQL and use Debezium connectors with Kafka to capture changes in database records. These changes are then sent to a data lake (S3) and a MongoDB database. The goal is to demonstrate the seamless integration and data flow from source databases to data lakes and NoSQL databases, ensuring real-time data synchronization and availability.
-
-# 
 
 # Docker Compose Setup for Data Flow Services
 
 This Docker Compose setup includes several services for a data flow pipeline, organized into three main categories: Source, Orchestration, and Sink. These services are configured to work together to provide a comprehensive data streaming and management solution. 
 
 ![Solution POC Dataflow](./solution/POC-Dataflow-Solution.png)
-
 
 ## Services
 
@@ -67,6 +62,15 @@ This Docker Compose setup includes several services for a data flow pipeline, or
 - **Container Name**: `mongo-express-df`
 - **Ports**: `8091`
 
+### API
+
+#### Flask API
+
+- **Path**: `apis/iot-ingestion/dataflow-iot.api.py`
+- **Run API**: `python apis/iot-ingestion/dataflow-iot.api.py`
+- **Ports**: `5000`
+- **Description**: This service runs a Flask API that interacts with the data flow pipeline.
+- **Documentation URL**: `http://127.0.0.1:5000/docs`
 
 **The versions of the containers are specified in a `.env` file available in the project.**
 
@@ -93,11 +97,39 @@ This Docker Compose setup includes several services for a data flow pipeline, or
 - **Mongo Express**: `http://localhost:8091`
   - **User**: `admin`
   - **Password**: `pass`
+- **Flask API**: `http://127.0.0.1:5000/docs`
+
+## Setup Instructions
+
+### Creating a Python Environment
+
+1. **Create a Python 3.12 Environment**:
+   ```bash
+   python3.12 -m venv venv
+   ```
+
+2. **Activate the Environment**:
+   - On macOS/Linux:
+     ```bash
+     source venv/bin/activate
+     ```
+   - On Windows:
+     ```bash
+     venv\Scripts\activate
+     ```
+
+3. **Install Requirements**:
+   Make sure you have a `requirements.txt` file in your `apis` folder, then run:
+   ```bash
+   pip install -r apis/requirements.txt
+   ```
 
 ## Data Flow
 
 1. **Source**: Data is ingested from the PostgreSQL database.
 2. **Orchestration**: Kafka serves as the streaming platform, with Schema Registry managing the schemas, and Kafka Connect with Debezium capturing changes from PostgreSQL.
 3. **Sink**: Processed data is stored in MinIO (data lake) and MongoDB (NoSQL database), with Mongo Express providing a web-based MongoDB admin interface.
+4. **API**: The Flask API serves as an interface for interacting with the data flow, allowing users to perform CRUD operations and access data.
 
-This setup provides a comprehensive data flow pipeline with PostgreSQL as the data source, Kafka for data streaming and orchestration, and MinIO and MongoDB as data sinks, all managed and monitored through various consoles and interfaces. 
+This setup provides a comprehensive data flow pipeline with PostgreSQL as the data source, Kafka for data streaming and orchestration, and MinIO and MongoDB as data sinks, all managed and monitored through various consoles and interfaces.
+

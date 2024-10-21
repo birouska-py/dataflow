@@ -1,0 +1,1154 @@
+{
+	"info": {
+		"_postman_id": "28ee63fa-1dc4-4ae1-9410-5d4d9112cf8b",
+		"name": "kafka-connect-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "35154115"
+	},
+	"item": [
+		{
+			"name": "api",
+			"item": [
+				{
+					"name": "positions",
+					"item": [
+						{
+							"name": "http://localhost:5000/positions",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"dtposition\": \"2024-07-02T14:30:00Z\",\n  \"long\": -46.6333,\n  \"lat\": -23.5505,\n  \"odometer\": 15000.5,\n  \"consume\": 12.3,\n  \"speedy\": 80,\n  \"equipment_id\": \"10000000-0000-0000-0000-000000000005\",\n  \"carddriver\": \"50000000-0000-0000-0000-000000000006\",\n  \"event_id\": \"40000000-0000-0000-0000-000000000008\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host-api}}/positions",
+									"host": [
+										"{{host-api}}"
+									],
+									"path": [
+										"positions"
+									]
+								},
+								"description": "Generated from cURL: curl -X 'POST' \\\n  'http://localhost:5000/positions' \\\n  -H 'accept: application/json' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n  \"dtposition\": \"2024-07-02T14:30:00Z\",\n  \"long\": -46.6333,\n  \"lat\": -23.5505,\n  \"odometer\": 15000.5,\n  \"consume\": 12.3,\n  \"speedy\": 80,\n  \"equipment_id\": \"10000000-0000-0000-0000-000000000005\",\n  \"carddriver\": \"50000000-0000-0000-0000-000000000006\",\n  \"event_id\": \"40000000-0000-0000-0000-000000000008\"\n}'\n"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "connectors",
+			"item": [
+				{
+					"name": "sink",
+					"item": [
+						{
+							"name": "minio",
+							"item": [
+								{
+									"name": "create-connector",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Accept",
+												"value": " application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"connector.class\": \"io.confluent.connect.s3.S3SinkConnector\",\n    \"topics.regex\": \"dataflow\\\\.dw\\\\..*\",\n    \"s3.bucket.name\": \"raw\",\n    \"store.url\": \"http://minio-df:9000\",\n    \"flush.size\":3,\n    \"storage.class\": \"io.confluent.connect.s3.storage.S3Storage\",      \n    \"format.class\": \"io.confluent.connect.s3.format.json.JsonFormat\",     \n    \"s3.region\": \"us-east-1\",\n    \"aws.access.key.id\": \"admin\",\n    \"aws.secret.access.key\": \"minioadmin\",\n    \"partitioner.class\":\"io.confluent.connect.storage.partitioner.TimeBasedPartitioner\",\n    \"path.format\":\"YYYY/MM/dd/HH/\",\n    \"locale\":\"pt_BR\",\n    \"timezone\":\"UTC\",\n    \"partition.duration.ms\":\"3600000\",\n    \"timestamp.extractor\":\"RecordField\",\n    \"timestamp.field\":\"ts_ms\"\n}\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{host}}/connectors/connector-minio/config",
+											"host": [
+												"{{host}}"
+											],
+											"path": [
+												"connectors",
+												"connector-minio",
+												"config"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "pause-connector",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Accept",
+												"value": " application/json",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{host}}/connectors/connector-minio/pause",
+											"host": [
+												"{{host}}"
+											],
+											"path": [
+												"connectors",
+												"connector-minio",
+												"pause"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "resume-connector",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Accept",
+												"value": " application/json",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{host}}/connectors/connector-minio/resume",
+											"host": [
+												"{{host}}"
+											],
+											"path": [
+												"connectors",
+												"connector-minio",
+												"resume"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "connector-status",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": " application/json",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{host}}/connectors/connector-minio/status",
+											"host": [
+												"{{host}}"
+											],
+											"path": [
+												"connectors",
+												"connector-minio",
+												"status"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "mongo",
+							"item": [
+								{
+									"name": "dim_client",
+									"item": [
+										{
+											"name": "create-connector",
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"connector.class\": \"com.mongodb.kafka.connect.MongoSinkConnector\",\n    \"tasks.max\": \"1\",\n    \"connection.uri\": \"mongodb://root:password@mongodb-df:27017/\",\n    \"database\": \"dataflow\",\n    \"collection\": \"dim_client\",\n    \"topics.regex\": \"dataflow.dw.dim_client\",\n    \"max.num.retries\": 1,\n    \"key.converter\": \"org.apache.kafka.connect.storage.StringConverter\",\n    \"key.converter.schemas.enable\": false,\n    \"value.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\n    \"value.converter.schemas.enable\": false\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-dim-client/config",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-dim-client",
+														"config"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "pause-connector",
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-dim-client/pause",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-dim-client",
+														"pause"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "resume-connector",
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-dim-client/resume",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-dim-client",
+														"resume"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "connector-status",
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-dim-client/status",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-dim-client",
+														"status"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "dim_driver",
+									"item": [
+										{
+											"name": "create-connector",
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"connector.class\": \"com.mongodb.kafka.connect.MongoSinkConnector\",\n    \"tasks.max\": \"1\",\n    \"connection.uri\": \"mongodb://root:password@mongodb-df:27017/\",\n    \"database\": \"dataflow\",\n    \"collection\": \"dim_driver\",\n    \"topics.regex\": \"dataflow.dw.dim_driver\",\n    \"max.num.retries\": 1,\n    \"key.converter\": \"org.apache.kafka.connect.storage.StringConverter\",\n    \"key.converter.schemas.enable\": false,\n    \"value.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\n    \"value.converter.schemas.enable\": false\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-dim-driver/config",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-dim-driver",
+														"config"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "pause-connector",
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-dim-driver/pause",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-dim-driver",
+														"pause"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "resume-connector",
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-dim-driver/resume",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-dim-driver",
+														"resume"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "connector-status",
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-dim-driver/status",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-dim-driver",
+														"status"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "dim_equipment",
+									"item": [
+										{
+											"name": "create-connector",
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"connector.class\": \"com.mongodb.kafka.connect.MongoSinkConnector\",\n    \"tasks.max\": \"1\",\n    \"connection.uri\": \"mongodb://root:password@mongodb-df:27017/\",\n    \"database\": \"dataflow\",\n    \"collection\": \"dim_equipment\",\n    \"topics.regex\": \"dataflow.dw.dim_equipment\",\n    \"max.num.retries\": 1,\n    \"key.converter\": \"org.apache.kafka.connect.storage.StringConverter\",\n    \"key.converter.schemas.enable\": false,\n    \"value.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\n    \"value.converter.schemas.enable\": false\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-dim-equipment/config",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-dim-equipment",
+														"config"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "pause-connector",
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-dim-equipment/pause",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-dim-equipment",
+														"pause"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "resume-connector",
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-dim-equipment/resume",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-dim-equipment",
+														"resume"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "connector-status",
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-dim-equipment/status",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-dim-equipment",
+														"status"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "dim_event",
+									"item": [
+										{
+											"name": "create-connector",
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"connector.class\": \"com.mongodb.kafka.connect.MongoSinkConnector\",\n    \"tasks.max\": \"1\",\n    \"connection.uri\": \"mongodb://root:password@mongodb-df:27017/\",\n    \"database\": \"dataflow\",\n    \"collection\": \"dim_event\",\n    \"topics.regex\": \"dataflow.dw.dim_event\",\n    \"max.num.retries\": 1,\n    \"key.converter\": \"org.apache.kafka.connect.storage.StringConverter\",\n    \"key.converter.schemas.enable\": false,\n    \"value.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\n    \"value.converter.schemas.enable\": false\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-dim-event/config",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-dim-event",
+														"config"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "pause-connector",
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-dim-event/pause",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-dim-event",
+														"pause"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "resume-connector",
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-dim-event/resume",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-dim-event",
+														"resume"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "connector-status",
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-dim-event/status",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-dim-event",
+														"status"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "dim_firmware",
+									"item": [
+										{
+											"name": "create-connector",
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"connector.class\": \"com.mongodb.kafka.connect.MongoSinkConnector\",\n    \"tasks.max\": \"1\",\n    \"connection.uri\": \"mongodb://root:password@mongodb-df:27017/\",\n    \"database\": \"dataflow\",\n    \"collection\": \"dim_firmware\",\n    \"topics.regex\": \"dataflow.dw.dim_firmware\",\n    \"max.num.retries\": 1,\n    \"key.converter\": \"org.apache.kafka.connect.storage.StringConverter\",\n    \"key.converter.schemas.enable\": false,\n    \"value.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\n    \"value.converter.schemas.enable\": false\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-dim-firmware/config",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-dim-firmware",
+														"config"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "pause-connector",
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-dim-firmware/pause",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-dim-firmware",
+														"pause"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "resume-connector",
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-dim-firmware/resume",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-dim-firmware",
+														"resume"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "connector-status",
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-dim-firmware/status",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-dim-firmware",
+														"status"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "dim_vehicle",
+									"item": [
+										{
+											"name": "create-connector",
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"connector.class\": \"com.mongodb.kafka.connect.MongoSinkConnector\",\n    \"tasks.max\": \"1\",\n    \"connection.uri\": \"mongodb://root:password@mongodb-df:27017/\",\n    \"database\": \"dataflow\",\n    \"collection\": \"dim_vehicle\",\n    \"topics.regex\": \"dataflow.dw.dim_vehicle\",\n    \"max.num.retries\": 1,\n    \"key.converter\": \"org.apache.kafka.connect.storage.StringConverter\",\n    \"key.converter.schemas.enable\": false,\n    \"value.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\n    \"value.converter.schemas.enable\": false\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-dim-vehicle/config",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-dim-vehicle",
+														"config"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "pause-connector",
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-dim-vehicle/pause",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-dim-vehicle",
+														"pause"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "resume-connector",
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-dim-vehicle/resume",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-dim-vehicle",
+														"resume"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "connector-status",
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-dim-vehicle/status",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-dim-vehicle",
+														"status"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "fct_position",
+									"item": [
+										{
+											"name": "create-connector",
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n    \"connector.class\": \"com.mongodb.kafka.connect.MongoSinkConnector\",\n    \"tasks.max\": \"1\",\n    \"connection.uri\": \"mongodb://root:password@mongodb-df:27017/\",\n    \"database\": \"dataflow\",\n    \"collection\": \"fct_position\",\n    \"topics.regex\": \"dataflow.dw.fct_position\",\n    \"max.num.retries\": 1,\n    \"key.converter\": \"org.apache.kafka.connect.storage.StringConverter\",\n    \"key.converter.schemas.enable\": false,\n    \"value.converter\": \"org.apache.kafka.connect.json.JsonConverter\",\n    \"value.converter.schemas.enable\": false\n}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-fct-position/config",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-fct-position",
+														"config"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "pause-connector",
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-fct-position/pause",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-fct-position",
+														"pause"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "resume-connector",
+											"request": {
+												"method": "PUT",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-fct-position/resume",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-fct-position",
+														"resume"
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "connector-status",
+											"request": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": " application/json",
+														"type": "text"
+													}
+												],
+												"url": {
+													"raw": "{{host}}/connectors/connector-mongo-fct-position/status",
+													"host": [
+														"{{host}}"
+													],
+													"path": [
+														"connectors",
+														"connector-mongo-fct-position",
+														"status"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "source",
+					"item": [
+						{
+							"name": "postgres-16 native",
+							"item": [
+								{
+									"name": "create-connector",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Accept",
+												"value": " application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n        \"connector.class\": \"io.debezium.connector.postgresql.PostgresConnector\",\n        \"tasks.max\": \"1\",\n        \"database.hostname\": \"postgres-df\",\n        \"database.port\": \"5432\",\n        \"database.user\": \"postgres\",\n        \"database.password\": \"postgres\",\n        \"database.dbname\" : \"dataflow\",\n        \"topic.prefix\": \"dataflow\",\n        \"plugin.name\": \"pgoutput\",\n        \"slot.name\": \"debezium_slot\",\n        \"publication.name\": \"debezium_publication\",\n        \"database.history.kafka.bootstrap.servers\": \"kafka-broker-df:9092\",\n        \"database.history.kafka.topic\": \"schema-changes.inventory\"\n}\n\n\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{host}}/connectors/connector-postgres16/config",
+											"host": [
+												"{{host}}"
+											],
+											"path": [
+												"connectors",
+												"connector-postgres16",
+												"config"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "pause-connector",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Accept",
+												"value": " application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n        \"connector.class\": \"io.debezium.connector.postgresql.PostgresConnector\",\n        \"tasks.max\": \"1\",\n        \"database.hostname\": \"postgres-df\",\n        \"database.port\": \"5432\",\n        \"database.user\": \"postgres\",\n        \"database.password\": \"postgres\",\n        \"database.dbname\" : \"dataflow\",\n        \"topic.prefix\": \"dataflow\",\n        \"schema.include.list\": \"inventory\"\n}\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{host}}/connectors/connector-postgres16/pause",
+											"host": [
+												"{{host}}"
+											],
+											"path": [
+												"connectors",
+												"connector-postgres16",
+												"pause"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "resume-connector",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Accept",
+												"value": " application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n        \"connector.class\": \"io.debezium.connector.postgresql.PostgresConnector\",\n        \"tasks.max\": \"1\",\n        \"database.hostname\": \"postgres-df\",\n        \"database.port\": \"5432\",\n        \"database.user\": \"postgres\",\n        \"database.password\": \"postgres\",\n        \"database.dbname\" : \"dataflow\",\n        \"topic.prefix\": \"dataflow\",\n        \"schema.include.list\": \"inventory\"\n}\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{host}}/connectors/connector-postgres16/resume",
+											"host": [
+												"{{host}}"
+											],
+											"path": [
+												"connectors",
+												"connector-postgres16",
+												"resume"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "connector-status",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": " application/json",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{host}}/connectors/connector-postgres16/status",
+											"host": [
+												"{{host}}"
+											],
+											"path": [
+												"connectors",
+												"connector-postgres16",
+												"status"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "connectors",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": " application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}/connectors",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"connectors"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "kafka-cluster-information",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": " application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{host}}",
+							"host": [
+								"{{host}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
