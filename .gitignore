@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Ambiente virtual
+env/
+venv/
+ENV/
+.env/
+
+# Distribuições
+*.egg-info/
+dist/
+build/
+
+# Configurações do PyCharm
+.idea/
+
+# Configurações do VS Code
+.vscode/
+
+# Arquivos de log
+*.log
+
+# Arquivos de cache
+*.sqlite3
+*.db
+
+# Outros arquivos temporários
+*.tmp
+*.temp
