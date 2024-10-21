@@ -7,7 +7,7 @@ __pycache__/
 env/
 venv/
 ENV/
-.env/
+.venv/
 
 # Distribuições
 *.egg-info/

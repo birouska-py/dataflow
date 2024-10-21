@@ -112,7 +112,8 @@ services:
     volumes:
        - ./utils/configs/connectors:/etc/kafka-connect/connectors   
        - ./utils/scripts/kafka-connect:/scripts  
-    command: /scripts/entrypoint.sh
+    #command: /scripts/entrypoint.sh createConnectors #parameter to create connector automatically
+    command: /scripts/entrypoint.sh # need create connectors manually
         
   redpanda-console-df:
     container_name: redpanda-console-df
@@ -146,8 +147,8 @@ services:
         condition: service_started
       # schema-registry-df:
       #   condition: service_started
-      kafka-connect-df:
-        condition: service_started
+      # kafka-connect-df:
+      #   condition: service_started
 
   #SINK
 
