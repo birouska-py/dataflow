@@ -86,14 +86,14 @@ This Docker Compose setup includes several services for a data flow pipeline, or
   - **Password**: `postgres`
 - **Kafka Connect**: `http://localhost:8083`
 - **MinIO**:
-  - MinIO Console: `http://localhost:9001`
+  - MinIO Console: `http://localhost:9051`
     - **User**: `admin`
     - **Password**: `minioadmin`
-  - S3 Endpoint: `http://localhost:9000`
+  - S3 Endpoint: `http://localhost:9050`
 - **Redpanda Console**: `http://localhost:8080`
 - **MongoDB**: `localhost:27017`
-  - **User**: `admin`
-  - **Password**: `pass`
+  - **User**: `root`
+  - **Password**: `password`
 - **Mongo Express**: `http://localhost:8091`
   - **User**: `admin`
   - **Password**: `pass`
