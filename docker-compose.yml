@@ -65,21 +65,21 @@ services:
     volumes:
       - '~/docker_files/volumes/dataflow/kafka:/bitnami/kafka'
 
-  # schema-registry-df:
-  #   image: docker.io/bitnami/schema-registry:${SCHEMA_REGISTRY_VERSION}
-  #   container_name: schema-registry-df
-  #   hostname: schema-registry-df
-  #   ports:
-  #     - "8081:8081"
-  #   networks:
-  #     - dataflow_network
-  #   environment:
-  #     - SCHEMA_REGISTRY_HOST_NAME=schema-registry
-  #     - SCHEMA_REGISTRY_LISTENERS=http://0.0.0.0:8081
-  #     - SCHEMA_REGISTRY_KAFKA_BROKERS=PLAINTEXT://kafka-broker-df:29092
-  #   depends_on:
-  #     kafka-broker-df:
-  #       condition: service_started
+  schema-registry-df:
+    image: docker.io/bitnami/schema-registry:${SCHEMA_REGISTRY_VERSION}
+    container_name: schema-registry-df
+    hostname: schema-registry-df
+    ports:
+      - "8081:8081"
+    networks:
+      - dataflow_network
+    environment:
+      - SCHEMA_REGISTRY_HOST_NAME=schema-registry
+      - SCHEMA_REGISTRY_LISTENERS=http://0.0.0.0:8081
+      - SCHEMA_REGISTRY_KAFKA_BROKERS=PLAINTEXT://kafka-broker-df:29092
+    depends_on:
+      kafka-broker-df:
+        condition: service_started
 
   # KAFKA CONNECT
   kafka-connect-df:
@@ -93,7 +93,7 @@ services:
     depends_on:      
       - kafka-broker-df      
     environment:
-    - KAFKA_LOG4J_OPTS=-Dlog4j.configuration=file:/opt/kafka/config/connect-log4j.properties
+    #- KAFKA_LOG4J_OPTS=-Dlog4j.configuration=file:/opt/kafka/config/connect-log4j.properties
     - KAFKA_CONNECT_BOOTSTRAP_SERVERS=kafka-broker-df:29092
     - |
         KAFKA_CONNECT_CONFIGURATION=
@@ -112,8 +112,8 @@ services:
     volumes:
        - ./utils/configs/connectors:/etc/kafka-connect/connectors   
        - ./utils/scripts/kafka-connect:/scripts  
-    #command: /scripts/entrypoint.sh createConnectors #parameter to create connector automatically
-    command: /scripts/entrypoint.sh # need create connectors manually
+    command: /scripts/entrypoint.sh createConnectors #parameter to create connector automatically
+    #command: /scripts/entrypoint.sh # need create connectors manually
         
   redpanda-console-df:
     container_name: redpanda-console-df
@@ -129,10 +129,10 @@ services:
       CONSOLE_CONFIG_FILE: |
         kafka:
           brokers: ["kafka-broker-df:9092"]
-          # schemaRegistry:
-          #   enabled: true
-          #   urls: ["http://schema-registry-df:8081"]
-        connect:
+        schemaRegistry:
+          enabled: true
+          urls: ["http://schema-registry-df:8081"]
+        kafkaConnect:
           enabled: true
           clusters:
             - name: kafka-connect-df # Required field, will be used as identifier in the frontend
